@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-UID = "openwrt-collectd"
+UID = "influx-collectd"
 DS = {"type": "influxdb", "uid": UID}
 HOST = 'AND ("host" =~ /^$host$/)'
 
