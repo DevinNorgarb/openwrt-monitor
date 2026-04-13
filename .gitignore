@@ -1,2 +1,1 @@
-/influxdb/*
-/grafana/*
+.cursor/hooks/state/continual-learning.json
