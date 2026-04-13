@@ -1,2 +1,2 @@
-./influxdb/data
-./grafana
+/influxdb/*
+/grafana/*
