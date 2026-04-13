@@ -33,7 +33,17 @@ docker compose down
 
 ## OpenWrt
 
-Enable collectd (often via **LuCI → Statistics → collectd**) and configure the **network** plugin (or equivalent) to send to the IP of the machine running Docker, port **25826**, protocol **UDP**. The exact menu names depend on your OpenWrt image and packages.
+1. Copy the repo’s `collectd.conf` to the router as **`/etc/collectd.conf`** (this is the main collectd config path on OpenWrt).
+2. Edit the **network** block so `IP_OF_TELEGRAF` is the LAN-reachable IP of the host where Docker (and Telegraf) is running:
+
+```text
+	Server "IP_OF_TELEGRAF" "25826" # Telegraf IP
+	Forward true
+```
+
+Those lines belong inside `<Plugin network> … </Plugin>` (see the full example in `collectd.conf` in this repo).
+
+3. Enable collectd (often via **LuCI → Statistics → collectd**) or restart the service so the new config is loaded. Metrics are sent to Telegraf on **UDP 25826**.
 
 Telegraf is configured in `telegraf.conf` to accept collectd on port 25826 and write to the `collectd` database in InfluxDB.
 
