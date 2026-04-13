@@ -43,5 +43,6 @@ services:
 
     volumes:
       - ./grafana:/var/lib/grafana
+      - ./grafana-provisioning:/etc/grafana/provisioning:ro
     depends_on:
       - influxdb

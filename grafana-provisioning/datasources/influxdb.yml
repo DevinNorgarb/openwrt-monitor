@@ -1,0 +1,14 @@
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB
+    uid: influx-collectd
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    database: collectd
+    isDefault: true
+    editable: false
+    jsonData:
+      httpMode: GET
+      version: InfluxQL
