@@ -562,7 +562,7 @@
         "type": "influxdb",
         "uid": "influx-collectd"
       },
-      "description": "Per-interface byte counters from collectd `interface` (if_octets). Telegraf default `collectd_parse_multivalue=split` stores DS names as measurements `interface_rx` / `interface_tx` with tag `instance` = netdev (e.g. br-lan, pppoe-wan).",
+      "description": "Telegraf split: `{plugin}_{dsName}` + field `value` + tag `instance`. OpenWrt often yields `interface_0`/`interface_1` (octets); stock types.db uses `interface_rx`/`interface_tx`. Join mode uses measurement `interface` fields `rx`/`tx`. Hide unused series in the legend.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -644,7 +644,7 @@
             "uid": "influx-collectd"
           },
           "hide": false,
-          "query": "SELECT non_negative_derivative(mean(\"value\"), 1s) FROM \"interface_rx\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval), \"instance\" fill(null)",
+          "query": "SELECT non_negative_derivative(mean(\"value\"), 1s) FROM \"interface_0\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval), \"instance\" fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series"
@@ -655,9 +655,53 @@
             "uid": "influx-collectd"
           },
           "hide": false,
-          "query": "SELECT non_negative_derivative(mean(\"value\"), 1s) FROM \"interface_tx\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval), \"instance\" fill(null)",
+          "query": "SELECT non_negative_derivative(mean(\"value\"), 1s) FROM \"interface_1\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval), \"instance\" fill(null)",
           "rawQuery": true,
           "refId": "B",
+          "resultFormat": "time_series"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influx-collectd"
+          },
+          "hide": false,
+          "query": "SELECT non_negative_derivative(mean(\"value\"), 1s) FROM \"interface_rx\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval), \"instance\" fill(null)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influx-collectd"
+          },
+          "hide": false,
+          "query": "SELECT non_negative_derivative(mean(\"value\"), 1s) FROM \"interface_tx\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval), \"instance\" fill(null)",
+          "rawQuery": true,
+          "refId": "D",
+          "resultFormat": "time_series"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influx-collectd"
+          },
+          "hide": false,
+          "query": "SELECT non_negative_derivative(mean(\"rx\"), 1s) FROM \"interface\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval), \"instance\" fill(null)",
+          "rawQuery": true,
+          "refId": "E",
+          "resultFormat": "time_series"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influx-collectd"
+          },
+          "hide": false,
+          "query": "SELECT non_negative_derivative(mean(\"tx\"), 1s) FROM \"interface\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval), \"instance\" fill(null)",
+          "rawQuery": true,
+          "refId": "F",
           "resultFormat": "time_series"
         }
       ],
@@ -1622,6 +1666,6 @@
   "timezone": "browser",
   "title": "OpenWrt router health",
   "uid": "openwrt-router",
-  "version": 2,
+  "version": 4,
   "weekStart": ""
 }

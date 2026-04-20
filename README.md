@@ -69,3 +69,17 @@ This stack was checked with:
 
 - `docker compose config` — valid Compose file
 - `docker compose up -d` — all services start; InfluxDB responds to `GET /ping`, Grafana to `GET /api/health`, Telegraf logs show `socket_listener` listening on UDP 25826
+
+## Dashboard looks unchanged or panels show “No data”
+
+1. **Use the provisioned dashboard** — open **OpenWrt router health** with UID **`openwrt-router`**. Remove any older copy you imported manually (same title, old queries).
+2. **Reload provisioning** — after changing JSON under `grafana-provisioning/`, run `docker compose restart grafana` (or wait for the next provision cycle). This repo sets **`allowUiUpdates: false`** so file updates are not overridden by an old UI-saved dashboard.
+3. **Confirm Telegraf is writing interface metrics** — with the stack up and the router sending collectd data:
+
+   ```bash
+   curl -sG 'http://localhost:8086/query' --data-urlencode 'db=collectd' \
+     --data-urlencode 'q=SHOW MEASUREMENTS' | tr ',' '\n' | grep -E 'interface|network_'
+   ```
+
+   With **`collectd_parse_multivalue = "split"`** (in `telegraf.conf`), interface octets usually appear as **`interface_0`** / **`interface_1`** (OpenWrt-style DS names) or **`interface_rx`** / **`interface_tx`** (stock `types.db`). The dashboard queries both, plus join-mode `interface` (`rx`/`tx`). Use **`SHOW MEASUREMENTS`** on your host to see which names you actually have.
+4. **Router** — ensure collectd is using an `interface` / `LoadPlugin network` config that actually emits counters (see `collectd.conf` in this repo) and that UDP **25826** reaches the Telegraf host.

@@ -308,16 +308,35 @@ def main() -> None:
             24,
             0,
             [
+                # OpenWrt / many builds expose if_octets DS names as 0/1 → Telegraf split → interface_0 / interface_1.
                 tgt(
-                    f'SELECT non_negative_derivative(mean("value"), 1s) FROM "interface_rx" WHERE $timeFilter {HOST} GROUP BY time($__interval), "instance" fill(null)',
+                    f'SELECT non_negative_derivative(mean("value"), 1s) FROM "interface_0" WHERE $timeFilter {HOST} GROUP BY time($__interval), "instance" fill(null)',
                     "A",
                 ),
                 tgt(
-                    f'SELECT non_negative_derivative(mean("value"), 1s) FROM "interface_tx" WHERE $timeFilter {HOST} GROUP BY time($__interval), "instance" fill(null)',
+                    f'SELECT non_negative_derivative(mean("value"), 1s) FROM "interface_1" WHERE $timeFilter {HOST} GROUP BY time($__interval), "instance" fill(null)',
                     "B",
                 ),
+                # Stock types.db uses rx/tx → interface_rx / interface_tx.
+                tgt(
+                    f'SELECT non_negative_derivative(mean("value"), 1s) FROM "interface_rx" WHERE $timeFilter {HOST} GROUP BY time($__interval), "instance" fill(null)',
+                    "C",
+                ),
+                tgt(
+                    f'SELECT non_negative_derivative(mean("value"), 1s) FROM "interface_tx" WHERE $timeFilter {HOST} GROUP BY time($__interval), "instance" fill(null)',
+                    "D",
+                ),
+                # Join multivalue: measurement `interface`, fields rx / tx.
+                tgt(
+                    f'SELECT non_negative_derivative(mean("rx"), 1s) FROM "interface" WHERE $timeFilter {HOST} GROUP BY time($__interval), "instance" fill(null)',
+                    "E",
+                ),
+                tgt(
+                    f'SELECT non_negative_derivative(mean("tx"), 1s) FROM "interface" WHERE $timeFilter {HOST} GROUP BY time($__interval), "instance" fill(null)',
+                    "F",
+                ),
             ],
-            description='Per-interface byte counters from collectd `interface` (if_octets). Telegraf default `collectd_parse_multivalue=split` stores DS names as measurements `interface_rx` / `interface_tx` with tag `instance` = netdev (e.g. br-lan, pppoe-wan).',
+            description='Telegraf split: `{plugin}_{dsName}` + field `value` + tag `instance`. OpenWrt often yields `interface_0`/`interface_1` (octets); stock types.db uses `interface_rx`/`interface_tx`. Join mode uses measurement `interface` fields `rx`/`tx`. Hide unused series in the legend.',
             unit="Bps",
             defaults_custom={
                 **ts_custom(fill=35, gradient="opacity", width=2.5),
@@ -634,7 +653,7 @@ def main() -> None:
         "timezone": "browser",
         "title": "OpenWrt router health",
         "uid": DASHBOARD_UID,
-        "version": 2,
+        "version": 4,
         "weekStart": "",
     }
 

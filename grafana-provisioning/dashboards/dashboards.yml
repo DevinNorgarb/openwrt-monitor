@@ -6,7 +6,8 @@ providers:
     folder: ""
     type: file
     disableDeletion: false
-    updateIntervalSeconds: 30
-    allowUiUpdates: true
+    updateIntervalSeconds: 10
+    # If true, Grafana can keep a UI-saved copy and ignore updated JSON on disk.
+    allowUiUpdates: false
     options:
       path: /etc/grafana/provisioning/dashboards
