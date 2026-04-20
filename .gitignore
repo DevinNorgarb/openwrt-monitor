@@ -1,1 +1,5 @@
 .cursor/hooks/state/continual-learning.json
+
+# Docker bind mounts — root-owned files; do not index (avoids permission errors).
+influxdb/
+grafana/

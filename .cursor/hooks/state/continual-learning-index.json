@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "transcripts": {
+    "/Users/devinnorgarb/.cursor/projects/Users-devinnorgarb-projects-devin-openwrt-monitor/agent-transcripts/33006bca-4748-4961-9a9d-3d59ebf981fe/33006bca-4748-4961-9a9d-3d59ebf981fe.jsonl": {
+      "mtimeMs": 1776658040235,
+      "lastProcessedAt": "2026-04-20T04:08:20Z"
+    },
+    "/Users/devinnorgarb/.cursor/projects/Users-devinnorgarb-projects-devin-openwrt-monitor/agent-transcripts/33006bca-4748-4961-9a9d-3d59ebf981fe/subagents/247ee018-58c7-4e37-9a67-628aa1753523.jsonl": {
+      "mtimeMs": 1776658065162,
+      "lastProcessedAt": "2026-04-20T04:08:20Z"
+    },
+    "/Users/devinnorgarb/.cursor/projects/Users-devinnorgarb-projects-devin-openwrt-monitor/agent-transcripts/34200a06-b5b9-4e19-b640-bc8714b16622/34200a06-b5b9-4e19-b640-bc8714b16622.jsonl": {
+      "mtimeMs": 1776119408305,
+      "lastProcessedAt": "2026-04-20T04:08:20Z"
+    },
+    "/Users/devinnorgarb/.cursor/projects/Users-devinnorgarb-projects-devin-openwrt-monitor/agent-transcripts/72cf8cea-f458-4d47-9d8d-d9b6d91c2071/72cf8cea-f458-4d47-9d8d-d9b6d91c2071.jsonl": {
+      "mtimeMs": 1776120729129,
+      "lastProcessedAt": "2026-04-20T04:08:20Z"
+    }
+  }
+}
