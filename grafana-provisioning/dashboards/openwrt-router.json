@@ -25,7 +25,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "fieldConfig": {
         "defaults": {
@@ -86,7 +86,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT last(\"value\") FROM \"thermal_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/)",
@@ -101,7 +101,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "fieldConfig": {
         "defaults": {
@@ -150,7 +150,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT last(\"value\") FROM \"uptime_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/)",
@@ -165,7 +165,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "fieldConfig": {
         "defaults": {
@@ -214,22 +214,22 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
-          "query": "SELECT last(\"value\") FROM \"users_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/)",
+          "query": "SELECT last(\"value\") FROM \"dhcpleases_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series"
         }
       ],
-      "title": "Users",
+      "title": "DHCP leases",
       "type": "stat"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "fieldConfig": {
         "defaults": {
@@ -278,7 +278,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT last(\"value\") FROM \"conntrack_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/)",
@@ -293,7 +293,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "fieldConfig": {
         "defaults": {
@@ -350,7 +350,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT last(\"value\") FROM \"ping_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/)",
@@ -365,7 +365,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "fieldConfig": {
         "defaults": {
@@ -414,7 +414,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT last(\"value\") FROM \"tcpconns_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/)",
@@ -442,7 +442,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "description": "Yellow/red bands follow panel thresholds (edit to match your silicon).",
       "fieldConfig": {
@@ -531,7 +531,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT mean(\"value\") FROM \"thermal_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -560,9 +560,9 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
-      "description": "Byte/sec from non_negative_derivative. If this looks wrong, your DS may be gauges \u2014 use mean(\"value\") instead.",
+      "description": "Per-interface byte counters from collectd `interface` (if_octets). Telegraf default `collectd_parse_multivalue=split` stores DS names as measurements `interface_rx` / `interface_tx` with tag `instance` = netdev (e.g. br-lan, pppoe-wan).",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -608,32 +608,7 @@
           },
           "unit": "Bps"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "network_0"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "network_0 (rate)"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "network_1"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "network_1 (rate)"
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 11,
@@ -666,10 +641,10 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
-          "query": "SELECT non_negative_derivative(mean(\"value\"), 1s) FROM \"network_0\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
+          "query": "SELECT non_negative_derivative(mean(\"value\"), 1s) FROM \"interface_rx\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval), \"instance\" fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series"
@@ -677,25 +652,25 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
-          "query": "SELECT non_negative_derivative(mean(\"value\"), 1s) FROM \"network_1\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
+          "query": "SELECT non_negative_derivative(mean(\"value\"), 1s) FROM \"interface_tx\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval), \"instance\" fill(null)",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series"
         }
       ],
-      "title": "Network throughput (derivative \u2014 counters)",
+      "title": "Interface traffic (B/s, rx + tx)",
       "type": "timeseries",
       "pluginVersion": "11.0.0"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
-      "description": "Raw collectd `network_value` series.",
+      "description": "Counters from collectd `network` write plugin (`ReportStats`): UDP metric export volume, not LAN/WAN usage.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -738,7 +713,8 @@
                 "value": null
               }
             ]
-          }
+          },
+          "unit": "Bps"
         },
         "overrides": []
       },
@@ -773,16 +749,27 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
-          "query": "SELECT mean(\"value\") FROM \"network_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
+          "query": "SELECT non_negative_derivative(mean(\"value\"), 1s) FROM \"network_0\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influx-collectd"
+          },
+          "hide": false,
+          "query": "SELECT non_negative_derivative(mean(\"value\"), 1s) FROM \"network_1\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
         }
       ],
-      "title": "network_value",
+      "title": "Collectd \u2192 Telegraf (network plugin I/O)",
       "type": "timeseries",
       "pluginVersion": "11.0.0"
     },
@@ -802,7 +789,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "description": "Envelope + trend: min/max bracket, mean centerline, p95 tail latency.",
       "fieldConfig": {
@@ -940,7 +927,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT min(\"value\") FROM \"ping_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -952,7 +939,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT mean(\"value\") FROM \"ping_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -964,7 +951,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT max(\"value\") FROM \"ping_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -976,7 +963,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT percentile(\"value\", 95) FROM \"ping_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -993,7 +980,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "description": "Distribution of ping samples in the selected time range.",
       "fieldConfig": {
@@ -1046,7 +1033,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT \"value\" FROM \"ping_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/)",
@@ -1062,7 +1049,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "description": "",
       "fieldConfig": {
@@ -1151,7 +1138,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT mean(\"value\") FROM \"ping_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -1180,7 +1167,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "description": "Stacked to show composition; turn off stacking in panel if you prefer overlaid lines.",
       "fieldConfig": {
@@ -1260,7 +1247,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT mean(\"value\") FROM \"processes_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -1271,7 +1258,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT mean(\"value\") FROM \"processes_0\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -1282,7 +1269,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT mean(\"value\") FROM \"processes_1\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -1311,7 +1298,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "description": "",
       "fieldConfig": {
@@ -1392,7 +1379,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT mean(\"value\") FROM \"vmem_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -1403,7 +1390,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT mean(\"value\") FROM \"swap_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -1432,7 +1419,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influx-collectdd"
+        "uid": "influx-collectd"
       },
       "description": "Left: tcpconns_value. Right: conntrack_value (often much larger).",
       "fieldConfig": {
@@ -1551,7 +1538,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT mean(\"value\") FROM \"tcpconns_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -1562,7 +1549,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "influx-collectdd"
+            "uid": "influx-collectd"
           },
           "hide": false,
           "query": "SELECT mean(\"value\") FROM \"conntrack_value\" WHERE $timeFilter AND (\"host\" =~ /^$host$/) GROUP BY time($__interval) fill(null)",
@@ -1590,7 +1577,7 @@
         "current": {},
         "datasource": {
           "type": "influxdb",
-          "uid": "influx-collectdd"
+          "uid": "influx-collectd"
         },
         "definition": "SHOW TAG VALUES WITH KEY = \"host\"",
         "hide": 0,
@@ -1634,7 +1621,7 @@
   },
   "timezone": "browser",
   "title": "OpenWrt router health",
-  "uid": "influx-collectdd",
+  "uid": "openwrt-router",
   "version": 2,
   "weekStart": ""
 }

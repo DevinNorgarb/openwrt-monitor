@@ -6,8 +6,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-UID = "influx-collectd"
-DS = {"type": "influxdb", "uid": UID}
+# Provisioned datasource (see grafana-provisioning/datasources/influxdb.yml).
+DS_UID = "influx-collectd"
+DS = {"type": "influxdb", "uid": DS_UID}
+# Dashboard UID (must differ from the datasource UID).
+DASHBOARD_UID = "openwrt-router"
 HOST = 'AND ("host" =~ /^$host$/)'
 
 
@@ -205,8 +208,8 @@ def main() -> None:
             None,
         ),
         (
-            "Users",
-            f'SELECT last("value") FROM "users_value" WHERE $timeFilter {HOST}',
+            "DHCP leases",
+            f'SELECT last("value") FROM "dhcpleases_value" WHERE $timeFilter {HOST}',
             "none",
             0,
             None,
@@ -299,9 +302,37 @@ def main() -> None:
     panels.append(
         timeseries(
             pid,
-            "Network throughput (derivative — counters)",
+            "Interface traffic (B/s, rx + tx)",
             y,
             11,
+            24,
+            0,
+            [
+                tgt(
+                    f'SELECT non_negative_derivative(mean("value"), 1s) FROM "interface_rx" WHERE $timeFilter {HOST} GROUP BY time($__interval), "instance" fill(null)',
+                    "A",
+                ),
+                tgt(
+                    f'SELECT non_negative_derivative(mean("value"), 1s) FROM "interface_tx" WHERE $timeFilter {HOST} GROUP BY time($__interval), "instance" fill(null)',
+                    "B",
+                ),
+            ],
+            description='Per-interface byte counters from collectd `interface` (if_octets). Telegraf default `collectd_parse_multivalue=split` stores DS names as measurements `interface_rx` / `interface_tx` with tag `instance` = netdev (e.g. br-lan, pppoe-wan).',
+            unit="Bps",
+            defaults_custom={
+                **ts_custom(fill=35, gradient="opacity", width=2.5),
+                "thresholdsStyle": {"mode": "off"},
+            },
+        )
+    )
+    pid += 1
+    y += 11
+    panels.append(
+        timeseries(
+            pid,
+            "Collectd → Telegraf (network plugin I/O)",
+            y,
+            9,
             24,
             0,
             [
@@ -314,41 +345,8 @@ def main() -> None:
                     "B",
                 ),
             ],
-            description="Byte/sec from non_negative_derivative. If this looks wrong, your DS may be gauges — use mean(\"value\") instead.",
+            description="Counters from collectd `network` write plugin (`ReportStats`): UDP metric export volume, not LAN/WAN usage.",
             unit="Bps",
-            defaults_custom={
-                **ts_custom(fill=35, gradient="opacity", width=2.5),
-                "thresholdsStyle": {"mode": "off"},
-            },
-            overrides=[
-                {
-                    "matcher": {"id": "byName", "options": "network_0"},
-                    "properties": [{"id": "displayName", "value": "network_0 (rate)"}],
-                },
-                {
-                    "matcher": {"id": "byName", "options": "network_1"},
-                    "properties": [{"id": "displayName", "value": "network_1 (rate)"}],
-                },
-            ],
-        )
-    )
-    pid += 1
-    y += 11
-    panels.append(
-        timeseries(
-            pid,
-            "network_value",
-            y,
-            9,
-            24,
-            0,
-            [
-                tgt(
-                    f'SELECT mean("value") FROM "network_value" WHERE $timeFilter {HOST} GROUP BY time($__interval) fill(null)',
-                    "A",
-                )
-            ],
-            description="Raw collectd `network_value` series.",
             defaults_custom=ts_custom(fill=32, gradient="hue", width=2),
         )
     )
@@ -635,7 +633,7 @@ def main() -> None:
         },
         "timezone": "browser",
         "title": "OpenWrt router health",
-        "uid": UID,
+        "uid": DASHBOARD_UID,
         "version": 2,
         "weekStart": "",
     }
